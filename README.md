@@ -1,4 +1,4 @@
-sync-builder
+sync-builder [![Build Status](https://travis-ci.org/andrusieczko/sync-builder.svg?branch=master)](https://travis-ci.org/andrusieczko/sync-builder)
 ============
 
 Wrapper to run asynchronous code in a synchronous way.
@@ -27,6 +27,27 @@ into this:
       .build(function() {
         console.log("done");
       });
+
+## Installation
+
+### bower
+
+    $ bower sync-builder --save
+
+and include `lib/sync-builder.js` or `lib/sync-builder.min.js` and use it globally (`SyncBuilder`) or using *AMD* or *CommonJS* (`sync-builder`).
+
+### npm
+
+    $ npm install sync-builder --save
+
+and use it:
+
+    var SyncBuilder = require('sync-builder');
+
+### Download
+
+Download the source file: [sync-builder.js](https://raw.githubusercontent.com/andrusieczko/sync-builder/master/lib/sync-builder.js) or production version: [sync-builder.min.js](https://raw.githubusercontent.com/andrusieczko/sync-builder/master/lib/sync-builder.min.js).
+
 
 ## Example
 
