@@ -5,7 +5,7 @@
   "main": "lib/sync-builder",
   "url": "https://github.com/andrusieczko/sync-builder",
   "description": "Wrapper to run asynchronous code in a synchronous way.",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "repository": {
     "type": "git",
     "url": "git://github.com/andrusieczko/sync-builder.git"
