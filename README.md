@@ -218,15 +218,15 @@ If you want to create synchronous function, you should not return anything.
 If you want to create a asynchronous function, you should return a `Promise`.
 The only requirement for being a `Promise` is to have a `then` function that is called after your asyncronous code was run.
 
-  var utils = {
-    sync: function() {
-      // your code
-    },
-    async: function() {
-      // your async code
-      return promise;
+    var utils = {
+      sync: function() {
+        // your code
+      },
+      async: function() {
+        // your async code
+        return promise;
+      }
     }
-  }
 
 Don't forget to call `build()` method at the end!
 
@@ -236,7 +236,16 @@ Don't forget to call `build()` method at the end!
 
     new SyncBuilder().async().sync().build(function() {
       console.log("I'm done");
-    });  
+    });
+
+You can pass a context and arguments to `build()` method as well:
+
+    new SyncBuilder().async().sync().build(function(a1, a2) {
+      // this === context
+      // a1 === arg1
+      // a2 === arg2
+      console.log("I'm done");
+    }, context, arg1, arg2);
 
 ### Arguments
 

@@ -39,6 +39,36 @@ describe('SyncBuilder', function() {
 
   });
 
+  it('should have a proper context in the methods', function(done) {
+    // given
+    var result = [];
+    var obj = {
+      a: function() {
+        return new Promise(function(resolve) {
+          setTimeout(function() {
+            result.push("a");
+            this.b();
+            resolve();
+          }.bind(this), 0);
+        }.bind(this));
+      },
+      b: function() {
+        result.push("b");
+      },
+      c: function() {
+        result.push("c");
+      }
+    };
+    var builder = new SyncBuilder(obj);
+
+    // when
+    builder.a().c().build(function() {
+      // then
+      expect(result).to.eql(["a", "b", "c"]);
+      done();
+    });
+  });
+
   it('should be possible to pass arguments in methods', function(done) {
     // given
     var result = [];
