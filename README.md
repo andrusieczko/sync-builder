@@ -1,19 +1,19 @@
 sync-builder
 ============
 
-Wrapper to build asynchronous code in a synchronous way.
+Wrapper to run asynchronous code in a synchronous way.
 
 Example:
 
     var utils = {
 
       async: function() {
-        var deferred = Q.defer();
-        setTimeout(function() {
-          console.log("async");
-          deferred.resolve();
-        }, 100);
-        return deferred.promise;
+        return new Promise(function(resolve) {
+          setTimeout(function() {
+            console.log("async");
+            resolve();
+          }, 0);
+        });
       },
 
       sync: function() {
@@ -24,7 +24,11 @@ Example:
 
     var builder = SyncBuilder(utils);
     builder
-      .async().sync().async().async().sync()
+      .async()
+      .sync()
+      .async()
+      .async()
+      .sync()
       .build(function() {
         console.log("done");
       });
@@ -37,6 +41,19 @@ Expected output order:
     async
     sync
     done
+
+To achieve the same without SyncBuilder library:
+
+    utils.async().then(function() {
+      utils.sync();
+      return utils.async();
+    }).then(function() {
+      return utils.async();
+    }).then(function() {
+      utils.sync();
+    }).then(function() {
+      console.log("done");
+    });
 
 ## Wrap your object instance
 
@@ -60,11 +77,11 @@ Let's consider John, who has to work to earn money. John spends 1 second to get 
       }
     };
 
-If we run code synchronously, we get not desired results:
+If we run code synchronously, we don't get desired results:
 
     var johnKowalski = new Person(1000, 500);
-    johnKowalski.goToWork();
-    johnKowalski.printBudget(); // prints 1000
+    johnKowalski.goToWork(); // adds 500 to budget after 1 second
+    johnKowalski.printBudget(); // prints 1000 immediately
 
 Using the wrapper, we get the expected result:
 
@@ -73,4 +90,119 @@ Using the wrapper, we get the expected result:
     builder
       .goToWork()
       .printBudget()
-      .build(); // prints 1500
+      .build(); // prints 1500 after 1 second
+
+## Motivation
+
+I had a set of utils method to test my component:
+
+    // given component
+    var testUtils = {
+      checkWidth: function(width) {
+        equal(component.width, width);
+      },
+      click: function() {
+        component.click(); // async, ready on 'ready' event
+      },
+      move: function(x) {
+        component.move(); // async, ready on 'moved' event
+      }
+    }
+
+To get it working, I had to use promises:
+
+    // given component
+    var testUtils = {
+      checkWidth: function(width) {
+        equal(component.width, width);
+      },
+      click: function() {
+        component.click(); // async
+
+        return new Promise(function(resolve) {
+          component.on('ready', function() {
+            resolve();
+          }
+        });
+      },
+      move: function(x) {
+        component.move(); // async
+
+        return new Promise(function(resolve) {
+          component.on('moved', function() {
+            resolve();
+          });
+        });
+      }
+    }
+
+The best I could do with `then` chaining was:
+
+    testUtils.checkWidth(100);
+    testUtils.click().then(function() {
+      testUtils.checkWidth(100);
+      return testUtils.move();
+    }).then(function() {
+      testUtils.checkWidth(150);
+      return testUtils.click();
+    }).then(function() {
+      testUtils.checkWidth(100);
+    });
+
+which is not bad but clearly not readable... Using `SyncBuilder`, we can achieve the same functionality in a readable way:
+
+    var testUtilsBuilder = new SyncBuilder(testUtils);
+    testUtilsBuilder
+      .checkWidth(100)
+      .click()
+      .checkWidth(100)
+      .move()
+      .checkWidth(150)
+      .click()
+      .checkWidth(150)
+      .build();
+
+Isn't it more understandable? :)
+
+## API
+
+SyncBuilder wraps all the methods from your object (whether it's a literal or an instance) and make it public to you.
+
+If you want to create synchronous function, you should not return anything.
+If you want to create a asynchronous function, you should return a `Promise`.
+The only requirement for being a `Promise` is to have a `then` function that is called after your asyncronous code was run.
+
+
+### Arguments
+
+You can pass arguments to your functions:
+
+    var utils = {
+
+      async: function(text) {
+        return new Promise(function(resolve) {
+          setTimeout(function() {
+            console.log(text);
+            resolve();
+          }, 0);
+        });
+      },
+
+      sync: function(text, number) {
+        console.log(text, number)
+      }
+
+    };
+
+    new SyncBuilder(utils)
+      .async("I'm asynchronous")
+      .sync("Sync here", 1)
+      .sync("Again sync", 2)
+      .build();
+
+the result:
+
+    I'm asynchronous
+    Sync here 1
+    Again sync 2
+

@@ -1,33 +1,15 @@
-/**
- * Wrapper to build asynchronous code in a synchronous way
- * Example:
- *
- * var obj = {
- *
- *   m1: function() {
- *     var deferred = Q.defer();
- *     setTimeout(function() {
- *       console.log("m1");
- *       deferred.resolve();
- *     })
- *     return deferred.promise;
- *   },
- *
- *   m2: function() {
- *     console.log("m2")
- *   }
- *
- * };
- *
- * var builder = SyncBuilder(obj);
- * builder.m1().m2().m1().m1().m2().build(function() { console.log("done") });
- *
- * Expected output order (in new lines):
- * m1, m2, m1, m1, m2, done
+/*!
+ * sync-builder (2014-10-18)
+ * Wrapper to run asynchronous code in a readable synchronous way.
+ * https://github.com/andrusieczko/sync-builder
+ * 
+ * Copyright 2014 Karol Andrusieczko
+ * Released under MIT license
  */
 
 var SyncBuilder = function(obj) {
-  var properties = [], prop;
+  var properties = [],
+    prop;
   for (prop in obj) {
     properties.push(prop);
   }
