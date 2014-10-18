@@ -3,7 +3,32 @@ sync-builder
 
 Wrapper to run asynchronous code in a synchronous way.
 
-Example:
+Let you transform this:
+
+    utils.async().then(function() {
+      utils.sync();
+      return utils.async();
+    }).then(function() {
+      return utils.async();
+    }).then(function() {
+      utils.sync();
+    }).then(function() {
+      console.log("done");
+    });
+
+into this:
+
+    SyncBuilder(utils)
+      .async()
+      .sync()
+      .async()
+      .async()
+      .sync()
+      .build(function() {
+        console.log("done");
+      });
+
+## Example
 
     var utils = {
 
@@ -42,7 +67,7 @@ Expected output order:
     sync
     done
 
-To achieve the same without SyncBuilder library:
+To achieve the same without `SyncBuilder`:
 
     utils.async().then(function() {
       utils.sync();
@@ -65,7 +90,7 @@ Let's consider John, who has to work to earn money. John spends 1 second to get 
     };
     Person.prototype = {
       goToWork: function() {
-        return Q.Promise(function(resolve) {
+        return new Promise(function(resolve) {
           setTimeout(function() {
             this.budget += this.salary;
             resolve();
@@ -172,6 +197,25 @@ If you want to create synchronous function, you should not return anything.
 If you want to create a asynchronous function, you should return a `Promise`.
 The only requirement for being a `Promise` is to have a `then` function that is called after your asyncronous code was run.
 
+  var utils = {
+    sync: function() {
+      // your code
+    },
+    async: function() {
+      // your async code
+      return promise;
+    }
+  }
+
+Don't forget to call `build()` method at the end!
+
+    new SyncBuilder().async().sync().build();
+
+`build()` method itself takes a callback to be called after all the methods:
+
+    new SyncBuilder().async().sync().build(function() {
+      console.log("I'm done");
+    });  
 
 ### Arguments
 
@@ -206,3 +250,8 @@ the result:
     Sync here 1
     Again sync 2
 
+### Promises
+
+In the examples, I used *ES6 Promises* syntax. Here is which browsers support it at the moment: [http://kangax.github.io/compat-table/es6/#Promise](http://kangax.github.io/compat-table/es6/#Promise).
+
+You can use any other library like [q](https://github.com/kriskowal/q) or [jQuery promise](http://api.jquery.com/promise/).

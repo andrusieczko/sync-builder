@@ -1,0 +1,26 @@
+{
+  "author": "Karol Andrusieczko",
+  "license": "MIT",
+  "name": "sync-builder",
+  "main": "lib/SyncBuilder.js",
+  "url": "https://github.com/andrusieczko/sync-builder",
+  "description": "Wrapper to run asynchronous code in a synchronous way.",
+  "version": "0.9.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/andrusieczko/sync-builder.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "es6-promise": "",
+    "expect.js": "0.2.0",
+    "grunt-contrib-jshint": "",
+    "grunt-contrib-uglify": "",
+    "grunt-mocha-cov": "~0.1.1",
+    "grunt-mocha-test": "",
+    "q": "^1.0.1"
+  },
+  "scripts": {
+    "test": "grunt test"
+  }
+}
