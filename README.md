@@ -18,7 +18,7 @@ Let you transform this:
 
 into this:
 
-    SyncBuilder(utils)
+    new SyncBuilder(utils)
       .async()
       .sync()
       .async()
