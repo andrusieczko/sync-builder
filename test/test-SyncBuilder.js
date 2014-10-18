@@ -1,7 +1,7 @@
 var Promise = require('es6-promise').Promise;
 var expect = require('expect.js');
 
-var SyncBuilder = require('../lib/SyncBuilder');
+var SyncBuilder = require('../lib/sync-builder');
 
 describe('SyncBuilder', function() {
 
@@ -33,7 +33,7 @@ describe('SyncBuilder', function() {
     builder.goToWork().printBudget().build(function() {
       // then
       expect(result).to.equal(1500);
-      
+
       done();
     });
 
